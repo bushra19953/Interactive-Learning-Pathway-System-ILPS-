@@ -1,10 +1,10 @@
-# Interactive Learning Pathway System (ILPS) 🚀
+# Interactive Learning Pathway System (ILPS) 
 
 An intelligent educational platform that automatically generates personalized assessments from PDF course materials using Google Gemini AI.
 
 ![ILPS Banner](https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&q=80&w=1200)
 
-## ✨ Features
+##  Features
 
 - **AI-Powered Quiz Generation**: Automatically creates Multiple Choice Questions (MCQs) by analyzing uploaded PDF modules using Google Gemini AI.
 - **Course Management**: Admins can create, update, and manage courses with thumbnails and PDF modules.
@@ -21,7 +21,7 @@ An intelligent educational platform that automatically generates personalized as
 - **AI Integration**: Google Generative AI (Gemini 2.0 / Flash-Latest)
 - **File Handling**: Multer (Uploads), PDF-Parse (Text Extraction)
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -55,7 +55,7 @@ An intelligent educational platform that automatically generates personalized as
    npm start
    ```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 ├── server/             # Backend Express server
@@ -72,11 +72,11 @@ An intelligent educational platform that automatically generates personalized as
 └── package.json        # Project dependencies and scripts
 ```
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Google Gemini Team for the powerful generative AI models.
 - Lucide React for the beautiful icons.
