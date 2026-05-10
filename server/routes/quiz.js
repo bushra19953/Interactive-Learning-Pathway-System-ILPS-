@@ -181,6 +181,37 @@ router.post('/submit/:courseId/:moduleId', auth, async (req, res) => {
       return res.status(404).json({ message: 'Quiz not found' });
     }
     
+    // Module locking logic
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+    
+    if (type !== 'final') {
+      const moduleIndex = course.modules.findIndex(m => m._id.toString() === moduleId);
+      if (moduleIndex > 0) {
+        const previousModule = course.modules[moduleIndex - 1];
+        const user = await require('../models/User').findById(req.user._id);
+        const enrollment = user.enrolledCourses.find(e => e.courseId.toString() === courseId);
+        
+        const hasCompletedPrev = enrollment && enrollment.completedModules.some(
+          cm => cm.moduleId.toString() === previousModule._id.toString() && cm.quizScore >= 70
+        );
+        
+        if (!hasCompletedPrev) {
+          return res.status(403).json({ message: 'Complete previous module to unlock this quiz' });
+        }
+      }
+    } else {
+      // Final exam requires all modules completed
+      const user = await require('../models/User').findById(req.user._id);
+      const enrollment = user.enrolledCourses.find(e => e.courseId.toString() === courseId);
+      const completedModulesCount = enrollment ? enrollment.completedModules.filter(m => m.quizScore >= 70).length : 0;
+      if (completedModulesCount < course.modules.length) {
+        return res.status(403).json({ message: 'Complete all modules to unlock the final exam' });
+      }
+    }
+    
     // Calculate score
     let correctAnswers = 0;
     const results = quiz.questions.map((question, index) => {

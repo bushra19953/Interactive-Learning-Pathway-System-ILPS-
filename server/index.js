@@ -10,6 +10,7 @@ const courseRoutes = require('./routes/courses');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
 const quizRoutes = require('./routes/quiz');
+const certificateRoutes = require('./routes/certificate');
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/quiz', quizRoutes);
+app.use('/api/certificate', certificateRoutes);
 
 // Stats endpoint
 app.get('/api/stats', async (req, res) => {

@@ -32,7 +32,10 @@ const Courses = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/courses');
+      const token = localStorage.getItem('token');
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      
+      const response = await axios.get('http://localhost:5000/api/courses', config);
       setCourses(response.data);
       setFilteredCourses(response.data);
     } catch (error) {
@@ -101,55 +104,78 @@ const Courses = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:bg-white/20 transition-all duration-300 group hover:scale-105 hover:shadow-2xl"
+                className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 hover:bg-white/20 transition-all duration-300 group hover:scale-105 hover:shadow-2xl flex flex-col"
               >
                 <div className="relative">
-                  <img
-                    src={course.thumbnail || 'https://images.pexels.com/photos/6146929/pexels-photo-6146929.jpeg?auto=compress&cs=tinysrgb&w=500'}
-                    alt={course.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center space-x-1">
+                  {course.thumbnail ? (
+                    <img
+                      src={course.thumbnail}
+                      alt={course.name}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gradient-to-tr from-purple-600 via-indigo-600 to-emerald-500 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                      <BookOpen className="w-16 h-16 text-white/50" />
+                    </div>
+                  )}
+                  <div className="absolute top-4 left-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center space-x-1 shadow-lg">
                     <BookOpen className="h-4 w-4" />
                     <span>{course.modules?.length || 0} Modules</span>
                   </div>
-                  <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm flex items-center space-x-1">
-                    <Star className="h-4 w-4 fill-current text-yellow-400" />
-                    <span>4.8</span>
-                  </div>
+                  
+                  {course.isEnrolled && (
+                    <div className="absolute top-4 right-4 bg-emerald-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-bold flex items-center shadow-lg">
+                      Enrolled
+                    </div>
+                  )}
                 </div>
                 
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors duration-300">
+                <div className="p-6 flex-grow flex flex-col">
+                  <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors duration-300 line-clamp-1">
                     {course.name}
                   </h3>
-                  <p className="text-gray-300 mb-4 text-sm">
-                    Master the fundamentals and advanced concepts with our comprehensive, hands-on curriculum designed by industry experts.
+                  <p className="text-gray-300 mb-4 text-sm line-clamp-2 flex-grow">
+                    {course.description || "Master the fundamentals and advanced concepts with our comprehensive, hands-on curriculum designed by industry experts."}
                   </p>
                   
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-4">
                     <div className="flex items-center space-x-4 text-sm text-gray-400">
                       <div className="flex items-center space-x-1">
-                        <Clock className="h-4 w-4" />
-                        <span>Self-paced</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Users className="h-4 w-4" />
-                        <span>120+ students</span>
+                        <Users className="h-4 w-4 text-blue-400" />
+                        <span>{course.enrolledCount || 0} enrolled</span>
                       </div>
                     </div>
                   </div>
+
+                  {course.isEnrolled && (
+                    <div className="mb-4">
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-gray-400">Your Progress</span>
+                        <span className="text-emerald-400 font-bold">{course.userProgress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-700 rounded-full h-1.5">
+                        <div 
+                          className="bg-gradient-to-r from-emerald-400 to-yellow-400 h-1.5 rounded-full" 
+                          style={{ width: `${course.userProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
                   
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mt-auto">
                     <div className="flex items-center space-x-2">
                       <Award className="h-5 w-5 text-emerald-400" />
                       <span className="text-emerald-400 text-sm font-semibold">Certificate</span>
                     </div>
                     <Link
                       to={`/course/${course._id}`}
-                      className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2 group/btn"
+                      className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2 group/btn ${
+                        course.isEnrolled 
+                          ? 'bg-white/10 hover:bg-white/20 text-white'
+                          : 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white shadow-lg'
+                      }`}
                     >
-                      <span>Start Learning</span>
+                      <span>{course.isEnrolled ? 'Continue' : 'Enroll Now'}</span>
                       <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
                     </Link>
                   </div>

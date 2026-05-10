@@ -11,7 +11,41 @@ router.get('/', async (req, res) => {
     const courses = await Course.find({ isActive: true })
       .populate('createdBy', 'name')
       .sort({ createdAt: -1 });
-    res.json(courses);
+
+    // Optional auth to get user progress
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    let user = null;
+    if (token) {
+      const jwt = require('jsonwebtoken');
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+        user = await User.findById(decoded.userId);
+      } catch (err) {}
+    }
+
+    const coursesWithDetails = await Promise.all(courses.map(async (course) => {
+      const enrolledCount = await User.countDocuments({ 'enrolledCourses.courseId': course._id });
+      
+      let userProgress = 0;
+      let isEnrolled = false;
+      
+      if (user) {
+        const enrollment = user.enrolledCourses.find(e => e.courseId.toString() === course._id.toString());
+        if (enrollment) {
+          isEnrolled = true;
+          userProgress = enrollment.progress || 0;
+        }
+      }
+
+      return {
+        ...course.toObject(),
+        enrolledCount,
+        isEnrolled,
+        userProgress
+      };
+    }));
+
+    res.json(coursesWithDetails);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

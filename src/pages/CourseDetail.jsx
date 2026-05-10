@@ -181,80 +181,116 @@ const CourseDetail = () => {
         >
           <h2 className="text-2xl font-bold text-white mb-6">Course Modules</h2>
           
-          <div className="space-y-4">
+          <div className="relative max-w-4xl mx-auto py-10">
+            {/* Center Vertical Line */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-white/10 transform -translate-x-1/2 rounded-full hidden md:block"></div>
+            
+            <div className="space-y-12 relative">
             {course.modules.map((module, index) => {
               const isUnlocked = isModuleUnlocked(index);
               const isCompleted = isModuleCompleted(module._id);
               
+              // Get user's score for this module if completed
+              let score = 0;
+              if (isCompleted && course.completedModules) {
+                const completion = course.completedModules.find(c => c.moduleId === module._id);
+                if (completion) score = completion.quizScore;
+              }
+
+              const isEven = index % 2 === 0;
+
+              // Card Styles
+              let cardBorderClass = 'border-gray-600/50';
+              let circleClass = 'bg-gray-800 border-gray-600';
+              let textStatusClass = 'text-gray-400';
+              let statusText = 'Locked';
+
+              if (isCompleted) {
+                cardBorderClass = 'border-l-4 border-emerald-500 border-t border-r border-b border-white/10';
+                circleClass = 'bg-emerald-500 border-emerald-400 text-white';
+                textStatusClass = 'text-emerald-400';
+                statusText = 'Completed';
+              } else if (isUnlocked) {
+                cardBorderClass = 'border border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.3)]';
+                circleClass = 'bg-purple-600 border-purple-400 text-white';
+                textStatusClass = 'text-purple-300';
+                statusText = 'Active';
+              }
+
               return (
                 <motion.div
                   key={module._id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`bg-white/5 rounded-lg p-6 border border-white/10 ${
-                    isUnlocked ? 'hover:bg-white/10' : 'opacity-60'
-                  } transition-all duration-300`}
+                  className="relative flex flex-col md:flex-row items-center justify-between w-full"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        isCompleted 
-                          ? 'bg-emerald-500/20 border-2 border-emerald-400' 
-                          : isUnlocked 
-                            ? 'bg-yellow-500/20 border-2 border-yellow-400'
-                            : 'bg-gray-500/20 border-2 border-gray-400'
-                      }`}>
-                        {isCompleted ? (
-                          <CheckCircle className="h-6 w-6 text-emerald-400" />
-                        ) : isUnlocked ? (
-                          <Play className="h-6 w-6 text-yellow-400" />
-                        ) : (
-                          <Lock className="h-6 w-6 text-gray-400" />
-                        )}
-                      </div>
+                  {/* Left Side (Empty on Odd, Content on Even) */}
+                  <div className={`w-full md:w-5/12 ${!isEven ? 'md:order-3' : 'md:order-1'}`}>
+                    <div className={`bg-white/5 backdrop-blur-md rounded-xl p-6 ${cardBorderClass} transition-all duration-300 ${!isUnlocked ? 'opacity-50 grayscale' : 'hover:scale-[1.02]'}`}>
+                      <h3 className="text-xl font-bold text-white mb-2">Module {index + 1}</h3>
+                      <h4 className="text-lg text-gray-200 mb-3">{module.name}</h4>
                       
-                      <div>
-                        <h3 className="text-lg font-semibold text-white mb-1">
-                          Module {index + 1}: {module.name}
-                        </h3>
-                        <p className="text-gray-400 text-sm">
-                          {isCompleted ? 'Completed' : isUnlocked ? 'Available' : 'Locked'}
-                        </p>
-                        {module.pdfPath && (
-                          <p className="text-gray-500 text-xs mt-1">
-                            PDF: {module.pdfPath.split('/').pop()}
+                      <div className="flex items-center space-x-2 mb-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold bg-white/5 ${textStatusClass}`}>
+                          {statusText} {isCompleted && `• Score: ${score}%`}
+                        </span>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-wrap items-center gap-3 mt-4">
+                        {!isUnlocked && (
+                          <p className="text-sm text-gray-500 flex items-center">
+                            <Lock className="w-4 h-4 mr-1" />
+                            Complete previous module to unlock
                           </p>
                         )}
+                        
+                        {isUnlocked && module.pdfPath && (
+                          <button
+                            onClick={() => handleViewPDF(module.pdfPath)}
+                            className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2"
+                          >
+                            <FileText className="h-4 w-4" />
+                            <span>View PDF</span>
+                          </button>
+                        )}
+                        
+                        {isUnlocked && !isCompleted && (
+                          <Link
+                            to={`/quiz/${course._id}/${module._id}`}
+                            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2 shadow-lg"
+                          >
+                            <Play className="h-4 w-4 fill-current" />
+                            <span>Take Quiz</span>
+                          </Link>
+                        )}
+
+                        {isCompleted && (
+                          <Link
+                            to={`/quiz/${course._id}/${module._id}?regenerate=true`}
+                            className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2"
+                          >
+                            <Award className="h-4 w-4" />
+                            <span>Retake Quiz</span>
+                          </Link>
+                        )}
                       </div>
                     </div>
-                    
-                    <div className="flex items-center space-x-3">
-                      {isUnlocked && module.pdfPath && (
-                        <button
-                          onClick={() => handleViewPDF(module.pdfPath)}
-                          className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2"
-                        >
-                          <FileText className="h-4 w-4" />
-                          <span>View PDF</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </button>
-                      )}
-                      
-                      {isUnlocked && (
-                        <Link
-                          to={`/quiz/${course._id}/${module._id}`}
-                          className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2"
-                        >
-                          <Award className="h-4 w-4" />
-                          <span>Take Quiz</span>
-                        </Link>
-                      )}
-                    </div>
                   </div>
+
+                  {/* Center Circle Node */}
+                  <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 order-2 w-12 h-12 rounded-full border-4 items-center justify-center font-bold z-10 shadow-xl transition-all duration-300 text-lg shadow-black/50" style={{ borderColor: isCompleted ? '#34d399' : isUnlocked ? '#c084fc' : '#4b5563', backgroundColor: isCompleted ? '#059669' : isUnlocked ? '#7e22ce' : '#1f2937', color: isUnlocked ? 'white' : '#9ca3af' }}>
+                    {isCompleted ? <CheckCircle className="w-6 h-6 text-white" /> : index + 1}
+                  </div>
+
+                  {/* Right Side (Content on Odd, Empty on Even) */}
+                  <div className={`hidden md:block w-5/12 ${!isEven ? 'md:order-1' : 'md:order-3'}`}></div>
                 </motion.div>
               );
             })}
+            </div>
           </div>
 
           {/* Final Exam */}
