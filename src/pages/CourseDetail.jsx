@@ -10,19 +10,38 @@ import {
   CheckCircle,
   FileText,
   Download,
-  ExternalLink
+  ExternalLink,
+  Bot
 } from 'lucide-react';
 import axios from 'axios';
+import AIStudyAssistant from '../components/AIStudyAssistant';
 
 const CourseDetail = () => {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
+  const [activeModuleForAssistant, setActiveModuleForAssistant] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetchCourse();
+    fetchUser();
   }, [id]);
+
+  const fetchUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const response = await axios.get('http://localhost:5000/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUser(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  };
 
   const fetchCourse = async () => {
     try {
@@ -91,9 +110,10 @@ const CourseDetail = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Course Header */}
+    <div className="min-h-screen py-8 px-4 flex flex-col md:flex-row relative">
+      <div className={`flex-1 transition-all duration-300 ${activeModuleForAssistant ? 'md:pr-[480px]' : ''}`}>
+        <div className="max-w-7xl mx-auto">
+          {/* Course Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -256,6 +276,16 @@ const CourseDetail = () => {
                             <span>View PDF</span>
                           </button>
                         )}
+
+                        {isUnlocked && module.pdfPath && (
+                          <button
+                            onClick={() => setActiveModuleForAssistant(module)}
+                            className="bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-purple-500/30"
+                          >
+                            <Bot className="h-4 w-4" />
+                            <span>Ask AI</span>
+                          </button>
+                        )}
                         
                         {isUnlocked && !isCompleted && (
                           <Link
@@ -329,6 +359,21 @@ const CourseDetail = () => {
           )}
         </motion.div>
       </div>
+      </div>
+
+      {/* AI Study Assistant Panel */}
+      {activeModuleForAssistant && (
+        <div className="fixed inset-0 z-50 md:z-40 md:inset-auto md:top-24 md:right-4 md:w-[460px] md:h-[calc(100vh-120px)] flex flex-col pointer-events-none">
+          <div className="flex-1 md:flex-none md:h-full bg-gray-900/95 backdrop-blur-md md:rounded-xl shadow-2xl pointer-events-auto border border-gray-700/50 flex flex-col overflow-hidden">
+            <AIStudyAssistant 
+              activeModule={activeModuleForAssistant} 
+              course={course}
+              user={user}
+              onClose={() => setActiveModuleForAssistant(null)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
