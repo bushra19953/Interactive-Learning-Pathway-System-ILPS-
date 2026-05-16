@@ -9,7 +9,7 @@ An intelligent, AI-driven educational platform that transforms static PDF course
 ---
 
 ## Website Showcase
-For a visual overview of the platform, please view the [Website Showcase PDF](./showcase/Website_Showcase.pdf).
+For a visual overview of the platform, please view the [Project Preview PDF](./previews/Project_Preview.pdf).
 
 ---
 
@@ -94,7 +94,7 @@ npm start
 │   ├── routes/         # API endpoints (Auth, Courses, Quiz, Assistant)
 │   ├── utils/          # AI logic (callGemini, geminiRotator, pdfExtractor)
 │   └── index.js        # Entry point
-├── showcase/           # Website screenshots and walkthrough PDF
+├── previews/           # Website screenshots and walkthrough PDF
 ├── src/                
 │   ├── components/     # AIStudyAssistant, ModuleCard, etc.
 │   ├── pages/          # CourseDetail, Certificate, Courses, etc.
