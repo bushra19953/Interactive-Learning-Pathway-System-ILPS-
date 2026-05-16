@@ -1,4 +1,4 @@
-# 🎓 Interactive Learning Pathway System (ILPS)
+#  Interactive Learning Pathway System (ILPS)
 
 [![Gemini AI](https://img.shields.io/badge/AI-Google%20Gemini-blueviolet?style=for-the-badge&logo=google-gemini)](https://aistudio.google.com/)
 [![MERN Stack](https://img.shields.io/badge/Stack-MERN-green?style=for-the-badge)](https://www.mongodb.com/mern-stack)
@@ -8,36 +8,40 @@ An intelligent, AI-driven educational platform that transforms static PDF course
 
 ---
 
+<<<<<<< HEAD
 ## 📸 Website Showcase
 For a visual overview of the platform, please view the [Website Showcase PDF](./showcase/Website_Showcase.pdf).
 
 ---
 
 ## 🌟 Key Features
+=======
+##  Key Features
+>>>>>>> dd1db23e593c8db776b2a857e3589fb79f5d767a
 
-### 🛣️ Zigzag Learning Pathway
+### Zigzag Learning Pathway
 Experience a modern, gamified course structure. Modules are arranged in a **zigzag map layout** that visualizes your journey.
 - **Sequential Locking**: Enforces a strict learning order. Module N unlocks only after passing Module N-1 with a score of 70% or higher.
 - **Dynamic States**: Modules clearly indicate whether they are `COMPLETED`, `ACTIVE`, or `LOCKED` with unique visual cues and animations.
 
-### 🤖 Grounded AI Study Assistant
+###  Grounded AI Study Assistant
 A context-aware chat widget integrated directly into the module viewer.
 - **RAG-based Grounding**: The assistant is strictly grounded in the current module's PDF content. It won't use outside knowledge, ensuring academic integrity.
 - **Quick Quizzes**: Generate on-demand, single-question practice quizzes mid-conversation to test your immediate understanding.
 - **Multi-Turn Chat**: Remembers conversation context for up to 10 messages.
 
-### 📝 AI Assessment Engine
+### AI Assessment Engine
 - **Automatic PDF Analysis**: Instantly extracts text from uploaded PDFs to generate comprehensive Multiple Choice Question (MCQ) quizzes.
 - **Smart Retakes**: Failed a quiz? Regenerate a new set of questions from the same material to ensure true mastery.
 
-### 🎓 Professional Certification
+###  Professional Certification
 Earn a **Unique Verified Certificate** upon completion of the entire course.
 - **Auto-Generation**: Certificates include the student's name, course title, average score, and a unique verification code.
 - **Print-Ready**: Styled for high-quality PDF export directly from the browser.
 
 ---
 
-## 🚀 Technical Highlights
+##  Technical Highlights
 
 - **API Key Rotation System**: Built-in `geminiRotator` utility that cycles through multiple API keys to bypass free-tier rate limits and ensure 100% service uptime.
 - **Grounded System Prompts**: Custom-engineered prompts that force the AI to cite sources from the provided `extractedText`.
@@ -86,7 +90,7 @@ npm start
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```bash
 ├── server/             
@@ -104,7 +108,7 @@ npm start
 
 ---
 
-## 🤝 Contribution & License
+##  Contribution & License
 
 This project was built as a capstone for the **ADBMS Project**. 
 Distributed under the **MIT License**.
