@@ -8,6 +8,11 @@ An intelligent, AI-driven educational platform that transforms static PDF course
 
 ---
 
+## 📸 Website Showcase
+For a visual overview of the platform, please view the [Website Showcase PDF](./showcase/Website_Showcase.pdf).
+
+---
+
 ## 🌟 Key Features
 
 ### 🛣️ Zigzag Learning Pathway
@@ -89,6 +94,7 @@ npm start
 │   ├── routes/         # API endpoints (Auth, Courses, Quiz, Assistant)
 │   ├── utils/          # AI logic (callGemini, geminiRotator, pdfExtractor)
 │   └── index.js        # Entry point
+├── showcase/           # Website screenshots and walkthrough PDF
 ├── src/                
 │   ├── components/     # AIStudyAssistant, ModuleCard, etc.
 │   ├── pages/          # CourseDetail, Certificate, Courses, etc.
@@ -102,9 +108,3 @@ npm start
 
 This project was built as a capstone for the **ADBMS Project**. 
 Distributed under the **MIT License**.
-
----
-
-<p align="center">
-  Built with ❤️ by Bushra Rahman & the ILPS Team
-</p>
